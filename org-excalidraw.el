@@ -38,6 +38,21 @@
 (require 'filenotify)
 (require 'f)
 
+(defun org-excalidraw-default-base ()
+  "Return default base excalidraw.json. This template is used for all new excalidraw files."
+  "{
+    \"type\": \"excalidraw\",
+    \"version\": 2,
+    \"source\": \"https://excalidraw.com\",
+    \"elements\": [],
+    \"appState\": {
+      \"gridSize\": null,
+      \"viewBackgroundColor\": \"#ffffff\"
+    },
+    \"files\": {}
+  }
+")
+
 (defgroup org-excalidraw nil
   "Customization options for org-excalidraw."
   :group 'org
@@ -54,32 +69,20 @@
   :type 'string
   :group 'org-excalidraw)
 
-(defun org-excalidraw-default-base ()
-  "Return default base excalidraw.json. This template is used for all new excalidraw files."
-  "{
-    \"type\": \"excalidraw\",
-    \"version\": 2,
-    \"source\": \"https://excalidraw.com\",
-    \"elements\": [],
-    \"appState\": {
-      \"gridSize\": null,
-      \"viewBackgroundColor\": \"#ffffff\"
-    },
-    \"files\": {}
-  }
-")
+(defun org-excalidraw-validate-excalidraw-file (path)
+  "Validate the excalidraw file at PATH is usable."
+  (unless
+   (string-suffix-p ".excalidraw" path)
+   (error "Excalidraw file must have .excalidraw extension")))
 
 (defun org-excalidraw-open-file (path)
   "Open .excalidraw file located at PATH."
-  (cl-assert (string-suffix-p ".excalidraw" path))
-  (shell-command
-   (if (eq system-type 'darwin)
-       (concat "open " (shell-quote-argument path))
-     (concat "xdg-open " (shell-quote-argument path)))))
+  (org-excalidraw-validate-excalidraw-file path)
+  (shell-command (org-excalidraw-shell-cmd-open path system-type)))
 
 (defun org-excalidraw-new-file (path)
   "Create and open a new excalidraw file at PATH."
-  (cl-assert (string-suffix-p ".excalidraw" path))
+  (org-excalidraw-validate-excalidraw-file path)
   (f-write org-excalidraw-base 'utf-8 path)
   (org-excalidraw-open-file path))
 
@@ -89,36 +92,58 @@
       (string-equal (cadr event)  "renamed")
   (let ((filename (cadddr event)))
     (when (string-suffix-p ".excalidraw" filename)
-    (org-excalidraw-to-svg filename)))))
+    (shell-command (org-excalidraw-shell-cmd-to-svg filename))))))
 
-(defun org-excalidraw-to-svg (filename)
-  "Convert excalidraw with FILENAME to svg."
-  (cl-assert (string-suffix-p ".excalidraw" filename))
-  (shell-command (concat "excalidraw_export --rename_fonts=true " (format "\"%s\"" filename))))
+(defun org-excalidraw-shell-cmd-to-svg (path)
+  "Construct shell cmd for converting excalidraw file with PATH to svg."
+  (concat "excalidraw_export --rename_fonts=true " (format "\"%s\"" path)))
+
+(defun org-excalidraw-shell-cmd-open (path os-type)
+  "Construct shell cmd to open excalidraw file with PATH for OS-TYPE."
+   (if (eq os-type 'darwin)
+       (concat "open " (shell-quote-argument path))
+     (concat "xdg-open " (shell-quote-argument path))))
+
+(defun org-excalidraw-to-svg (path)
+  "Convert excalidraw at PATH to svg."
+  (org-excalidraw-validate-excalidraw-file path)
+  (shell-command (org-excalidraw-shell-cmd-open path system-type)))
 
 (defun org-excalidraw-open-svg (path)
-  "Open an the excalidraw file at PATH for a given SVG."
+  "Open an the excalidraw file at linked to svg at PATH."
   (let ((excal-file-path (string-remove-suffix ".svg" path)))
-    (message "opening %S" excal-file-path)
     (org-excalidraw-open-file excal-file-path)))
 
 (defun org-excalidraw-get-unique-name ()
-  "Format current time to disambiguate files."
-  (format-time-string "%Y-%m-%d-%H-%M-%S" (current-time)))
+  "Return a unique string for a new excalidraw filename."
+  (format "%s.excalidraw" (org-id-uuid)))
+
+(defun org-excalidraw-format-link (path)
+  "Format a link to excalidraw file at PATH."
+  (org-excalidraw-validate-excalidraw-file path)
+  (format "[[excalidraw:%s.svg]]" path))
+
+(defun org-excalidraw-check-dir (dir)
+  "Check that org-excalidraw directory at DIR exists."
+  (message (format "hey %s" (f-dir? dir)))
+  (unless
+      (f-dir? dir)
+    (error (format "Excalidraw directory %s does not exist" dir))))
 
 ;;;###autoload
 (defun org-excalidraw-create-drawing ()
   "Create an excalidraw drawing and insert an 'org-mode' link to it at Point."
   (interactive)
-  (let* ((id (org-excalidraw-get-unique-name))
-         (path (f-join org-excalidraw-directory (format "%s.excalidraw" id))))
-    (insert "[[" "excalidraw:" path ".svg" "]]")
+  (let* ((filename (org-excalidraw-get-unique-name))
+         (path (f-join org-excalidraw-directory filename)))
+    (insert (org-excalidraw-format-link path))
   (org-excalidraw-new-file path)))
 
 ;;;###autoload
 (defun org-excalidraw-initialize ()
   "Setup excalidraw.el. Call this after 'org-mode initialization."
   (interactive)
+  (org-excalidraw-check-dir org-excalidraw-directory)
         (file-notify-add-watch org-excalidraw-directory '(change) 'org-excalidraw-handle-file-change)
         (org-link-set-parameters "excalidraw"
                                 :follow 'org-excalidraw-open-svg
