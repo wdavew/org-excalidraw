@@ -29,3 +29,13 @@ org-excalidraw depends on [excalidraw_export](https://github.com/Timmmm/excalidr
 4. Enable the `File Handling API` flag in Chrome. Visit `chrome://flags` to do this.
 
 5. Install and configure `org-excalidraw`.
+
+## Usage
+
+Call `M-x org-excalidraw-create-drawing` in an `org-mode` document.
+
+This does 2 things:
+1. Creates an empty excalidraw file. You can adjust the settings `org-excalidraw` uses for new files by customizing `org-excalidraw-base`. 
+2. Inserts a link to this file with a custom `excalidraw:` type. The `excalidraw:` link type both displays the image inline and suppots following the to excalidraw for editing. 
+
+As long as `excalidraw_export` is available and configured correctly, all changes saved in the excalidraw application will update the corresponding SVG files.
