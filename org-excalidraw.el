@@ -37,9 +37,11 @@
 (require 'cl-lib)
 (require 'filenotify)
 (require 'f)
+(require 'org-id)
+(require 'ol)
 
 (defun org-excalidraw-default-base ()
-  "Return default base excalidraw.json. This template is used for all new excalidraw files."
+  "Get default JSON template used for new excalidraw files."
   "{
     \"type\": \"excalidraw\",
     \"version\": 2,
@@ -125,10 +127,8 @@
 
 (defun org-excalidraw-check-dir (dir)
   "Check that org-excalidraw directory at DIR exists."
-  (message (format "hey %s" (f-dir? dir)))
-  (unless
-      (f-dir? dir)
-    (error (format "Excalidraw directory %s does not exist" dir))))
+  (unless (f-dir? dir)
+    (error "Excalidraw directory %s does not exist" dir)))
 
 ;;;###autoload
 (defun org-excalidraw-create-drawing ()
