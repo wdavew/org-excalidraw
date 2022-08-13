@@ -2,9 +2,12 @@
 
 ## Introduction
 
-`org-excalidraw` is a package for managing [excalidraw](https://www.excalidraw.com) drawings in org-mode.
+`org-excalidraw` is a tiny package for managing [excalidraw](https://www.excalidraw.com) drawings in org-mode.
 
 It supports creating and linking to a new excalidraw file from an org-mode file
+
+
+![Org-Excalidraw Demo](./assets/demo.gif)
 
 
 ## Why?
@@ -23,9 +26,12 @@ One of the few components `org-mode` lacks is a solution to easily draw when pla
 
 ### Org-Excalidraw
 
-`org-excalidraw` provides a barebones solution: call out to excalidraw from a .org file to link to drawings. You can also render them inline in org-mode.
-This package also implements a custom link type for excalidraw files. Following the excalidraw link will open your drawing in excalidraw.
+`org-excalidraw` provides a barebones solution: do your drawing in excalidraw, and your writing in org mode.
+
+The package implements a custom link type for excalidraw files. Following the excalidraw link will open your drawing in excalidraw.
 Saving changes in excalidraw will be reflected in org mode within a second or two.
+
+You can also render your excalidraw files inline in org-mode: they behave similarly to inline images
 
 For me, this synchronization makes both tools more useful: I can easily draw in org-mode, and I can apply the organizational capabilities of org-mode to excalidraw diagrams.
 
