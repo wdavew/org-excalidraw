@@ -39,7 +39,7 @@
 (require 'org-id)
 (require 'ol)
 
-(defun org-excalidraw-default-base ()
+(defun org-excalidraw--default-base ()
   "Get default JSON template used for new excalidraw files."
   "{
     \"type\": \"excalidraw\",
@@ -64,7 +64,7 @@
   :type 'string
   :group 'org-excalidraw)
 
-(defcustom org-excalidraw-base (org-excalidraw-default-base)
+(defcustom org-excalidraw-base (org-excalidraw--default-base)
   "JSON string representing base excalidraw template for new files."
   :type 'string
   :group 'org-excalidraw)
