@@ -6,7 +6,7 @@
 ;; Created: 2022
 ;; Version: 0.1.0
 ;; Keywords: convenience, outlines
-;; Package-Requires: ((org "9.3") (emacs "26.1") (f "0.20.0"))
+;; Package-Requires: ((org "9.3") (emacs "26.1"))
 
 ;; Permission is hereby granted, free of charge, to any person
 ;; obtaining a copy of this software and associated documentation
@@ -108,14 +108,15 @@
          (link (format "[[excalidraw:%s.svg]]" path)))
     (org-excalidraw--validate-excalidraw-file path)
     (insert link)
-    (f-write org-excalidraw-base 'utf-8 path)
+    (with-temp-file path (insert org-excalidraw-base))
     (shell-command (org-excalidraw--shell-cmd-open path system-type))))
+
 
 ;;;###autoload
 (defun org-excalidraw-initialize ()
   "Setup excalidraw.el. Call this after 'org-mode initialization."
   (interactive)
-  (unless (f-directory-p org-excalidraw-directory)
+  (unless (file-directory-p org-excalidraw-directory)
     (error
      "Excalidraw directory %s does not exist"
      org-excalidraw-directory))
