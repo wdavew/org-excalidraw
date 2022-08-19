@@ -123,7 +123,12 @@
   (file-notify-add-watch org-excalidraw-directory '(change) 'org-excalidraw--handle-file-change)
   (org-link-set-parameters "excalidraw"
                            :follow 'org-excalidraw--open-file-from-svg
-                           :image-data-fun '+org-image-file-data-fn))
+                           :image-data-fun (lambda (_protocol link _desc)
+                                             (with-temp-buffer (insert-file-contents-literally link)
+                                                               (buffer-substring-no-properties
+                                                                (point-min)
+                                                                (point-max))))))
+
 
 (provide 'org-excalidraw)
 ;;; org-excalidraw.el ends here
