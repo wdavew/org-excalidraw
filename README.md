@@ -51,7 +51,7 @@ Using `use-pacakge`:
 ```elisp
 (use-package org-excalidraw
   :straight (:type git :host github :repo "wdavew/org-excalidraw")
-  :config
+  :custom
   (org-excalidraw-directory "~/path_to_store_excalidraw_files")
 )
 ```
