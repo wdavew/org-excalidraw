@@ -60,8 +60,7 @@ Using `use-pacakge`:
 `org-excalidraw` requires external dependencies outside of Emacs and `org-mode`.
 
 1. We need to programmatically export excalidraw files to `.svg` for display.
-org-excalidraw depends on [excalidraw_export](https://github.com/Timmmm/excalidraw_export) to do this. It must be available on your system's PATH.
-NOTE: you may need to install some dependencies like `canvas` for this package to work correctly.
+org-excalidraw depends on [kroki-cli](https://github.com/yuzutech/kroki-cli) to do this. It must be available on your system's PATH.
 
 2. To correctly display the produced SVGs, your system needs some fonts installed.
 [The excalidraw_export repo provides these as well](https://github.com/Timmmm/excalidraw_export/tree/master/src).
