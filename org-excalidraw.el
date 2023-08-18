@@ -77,7 +77,7 @@
 
 (defun org-excalidraw--shell-cmd-to-svg (path)
   "Construct shell cmd for converting excalidraw file with PATH to svg."
-  (concat "excalidraw_export --rename_fonts=true " (format "\"%s\"" path)))
+  (format "kroki convert \"%1$s\" -o \"%1$s.svg\"" path))
 
 (defun org-excalidraw--shell-cmd-open (path os-type)
   "Construct shell cmd to open excalidraw file with PATH for OS-TYPE."
